@@ -1,4 +1,4 @@
-package io.github.lhannest.bloggerific.activities;
+package io.github.lhannest.bloggerific.networking;
 
 import android.Manifest;
 import android.accounts.Account;

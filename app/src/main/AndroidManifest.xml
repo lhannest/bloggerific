@@ -24,10 +24,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.BloggerImportActivity" />
-
+        <activity android:name=".networking.OAuth2Activity" />
         <activity
-            android:name=".activities.OAuth2Activity" />
-
+            android:name=".activities.NoteActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" ></activity>
     </application>
 
 </manifest>

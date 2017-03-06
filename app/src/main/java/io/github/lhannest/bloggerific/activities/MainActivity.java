@@ -9,11 +9,17 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import io.github.lhannest.bloggerific.R;
-import io.github.lhannest.bloggerific.activities.BloggerImportActivity;
+import io.github.lhannest.bloggerific.data.DatabaseHelper;
+import io.github.lhannest.bloggerific.data.Note;
 
 public class MainActivity extends AppCompatActivity {
+    ListView listView;
+    DatabaseHelper databaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,8 +37,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//        Intent intent = new Intent(this, BloggerImportActivity.class);
-//        startActivity(intent);
+        listView = (ListView) findViewById(R.id.mainListView);
+        databaseHelper = new DatabaseHelper(this);
+
+        refreshListView();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshListView();
     }
 
     @Override
@@ -58,5 +72,31 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void refreshListView() {
+        final Note[] notes = databaseHelper.getAllNotes(true);
+        String[] titles = new String[notes.length];
+
+        for (int i = 0; i < notes.length; i++) {
+            titles[i] = notes[i].title;
+        }
+
+
+        listView.setAdapter(new ArrayAdapter<String>(
+                MainActivity.this,
+                android.R.layout.simple_list_item_1,
+                titles
+        ));
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                long noteId = notes[position].localId;
+                Intent intent = new Intent(MainActivity.this, NoteActivity.class);
+                intent.putExtra("note_id", noteId);
+                startActivity(intent);
+            }
+        });
     }
 }

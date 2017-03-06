@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -13,25 +12,23 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import io.github.lhannest.bloggerific.HttpRequester;
+import io.github.lhannest.bloggerific.networking.HttpRequester;
 import io.github.lhannest.bloggerific.R;
+import io.github.lhannest.bloggerific.data.DatabaseHelper;
+import io.github.lhannest.bloggerific.networking.OAuth2Activity;
 
 public class BloggerImportActivity extends AppCompatActivity {
     EditText searchEditText;
     Button searchBtn;
     ListView postListView;
+    DatabaseHelper databaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +38,8 @@ public class BloggerImportActivity extends AppCompatActivity {
         searchEditText = (EditText) findViewById(R.id.searchBloggerTxt);
         searchBtn = (Button) findViewById(R.id.searchBloggerBtn);
         postListView = (ListView) findViewById(R.id.searchBloggerListview);
+
+        databaseHelper = new DatabaseHelper(this);
 
         Intent oauth2Intent = new Intent(this, OAuth2Activity.class);
         startActivityForResult(oauth2Intent, 0);
@@ -60,11 +59,9 @@ public class BloggerImportActivity extends AppCompatActivity {
 
                     String queryTerms = searchEditText.getText().toString();
 
-                    // Removed for git commit
-                    String blogId;
+                    String blogId = "3422927454874537874";
 
                     searchForPosts(blogId, queryTerms, oauth2token);
-
 
                 }
             });
@@ -127,7 +124,7 @@ public class BloggerImportActivity extends AppCompatActivity {
 
     }
 
-    private void importPost(String title, String content) {
+    private void importPost(final String title, final String content) {
         String wordCount = Integer.toString(content.split(" ").length);
 
         new AlertDialog.Builder(BloggerImportActivity.this)
@@ -136,7 +133,8 @@ public class BloggerImportActivity extends AppCompatActivity {
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
+                        databaseHelper.createNote(title, content);
+                        finish();
                     }
                 })
                 .setNegativeButton(android.R.string.no, null)

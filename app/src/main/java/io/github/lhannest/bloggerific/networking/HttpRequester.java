@@ -1,4 +1,4 @@
-package io.github.lhannest.bloggerific;
+package io.github.lhannest.bloggerific.networking;
 
 import android.content.Context;
 import android.util.Log;
